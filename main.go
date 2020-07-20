@@ -6,7 +6,12 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
 )
+
+// var logger *zap.Logger
+var sugar *zap.SugaredLogger
 
 // worker performs the actual work against the table
 func worker(id int, wg *sync.WaitGroup, tableName string) {
@@ -18,10 +23,10 @@ func worker(id int, wg *sync.WaitGroup, tableName string) {
 	for {
 		err := batchWriteItems(tableName)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			sugar.Errorf("%v\n", err)
 			break
 		}
-		fmt.Printf(".")
+		sugar.Debug(".")
 	}
 
 }
@@ -43,6 +48,13 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 }
 
 func main() {
+
+	// logger = zap.NewExample()
+	// logger, _ := zap.NewDevelopment()
+	logger, _ := zap.NewProduction()
+	defer logger.Sync()
+	sugar = logger.Sugar()
+
 	var numWorkers int
 	var tableName string
 	var duration int
@@ -52,14 +64,14 @@ func main() {
 	flag.Parse()
 
 	if len(tableName) == 0 {
-		fmt.Println("Table name is required")
+		sugar.Fatal("Table name is required")
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
 	err := discoverSchema(tableName)
 	if err != nil {
-		fmt.Printf("Error discovering DynamoDB table schema: %v", err)
+		sugar.Fatalf("Error discovering DynamoDB table schema: %v", err)
 		os.Exit(1)
 	}
 
@@ -71,12 +83,12 @@ func main() {
 	}
 
 	timeout := time.Duration(duration) * time.Second
-	fmt.Printf("Wait for waitgroup (up to %s)\n", timeout)
+	sugar.Infof("Wait for waitgroup (up to %s)\n", timeout)
 
 	if waitTimeout(&wg, timeout) {
-		fmt.Printf("\nTimeout elapsed after %s\n", timeout)
+		sugar.Infof("\nTimeout elapsed after %s\n", timeout)
 	} else {
-		fmt.Println("Done")
+		sugar.Infof("Done")
 	}
-	fmt.Println("Done")
+	sugar.Infof("Done")
 }

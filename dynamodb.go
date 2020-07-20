@@ -139,7 +139,7 @@ func createPutRequest() (*dynamodb.PutRequest, error) {
 // batchReadItems will read data from to the table
 func batchGetItems(tableName string) error {
 	//TODO
-	fmt.Println(tableName)
+	sugar.Info(tableName)
 	return nil
 }
 
