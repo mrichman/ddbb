@@ -77,20 +77,20 @@ func batchWriteItems(tableName string) error {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case dynamodb.ErrCodeProvisionedThroughputExceededException:
-				return fmt.Errorf("ErrCodeProvisionedThroughputExceededException: %v\n", aerr.Error())
+				return fmt.Errorf("ErrCodeProvisionedThroughputExceededException: %v", aerr.Error())
 			case dynamodb.ErrCodeResourceNotFoundException:
-				return fmt.Errorf("ErrCodeResourceNotFoundException: %v\n", aerr.Error())
+				return fmt.Errorf("ErrCodeResourceNotFoundException: %v", aerr.Error())
 			case dynamodb.ErrCodeItemCollectionSizeLimitExceededException:
-				return fmt.Errorf("ErrCodeItemCollectionSizeLimitExceededException: %v\n", aerr.Error())
+				return fmt.Errorf("ErrCodeItemCollectionSizeLimitExceededException: %v", aerr.Error())
 			case dynamodb.ErrCodeInternalServerError:
-				return fmt.Errorf("ErrCodeInternalServerError: %v\n", aerr.Error())
+				return fmt.Errorf("ErrCodeInternalServerError: %v", aerr.Error())
 			default:
-				return fmt.Errorf("%v\n", aerr.Error())
+				return fmt.Errorf("%v", aerr.Error())
 			}
 		} else {
 			// Return the error, cast err to awserr.Error to get the Code and
 			// Message from an error.
-			return fmt.Errorf("%v\n", err.Error())
+			return fmt.Errorf("%v", err.Error())
 		}
 	}
 
@@ -161,7 +161,6 @@ func getRandomNumber(min, max float64) string {
 
 // getRandomBinary returns a random byte array
 func getRandomBinary(length int64) []byte {
-	//return "dGhpcyB0ZXh0IGlzIGJhc2U2NC1lbmNvZGVk" // "this text is base64-encoded"
 	token := make([]byte, length)
 	rand.Read(token)
 	return token

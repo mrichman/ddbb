@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"sync"
 	"time"
@@ -18,12 +17,12 @@ func worker(id int, wg *sync.WaitGroup, tableName string) {
 
 	defer wg.Done()
 
-	fmt.Printf("Worker %d starting\n", id)
+	sugar.Infof("Worker %d starting", id)
 
 	for {
 		err := batchWriteItems(tableName)
 		if err != nil {
-			sugar.Errorf("%v\n", err)
+			sugar.Errorf("%v", err)
 			break
 		}
 		sugar.Debug(".")
@@ -83,10 +82,10 @@ func main() {
 	}
 
 	timeout := time.Duration(duration) * time.Second
-	sugar.Infof("Wait for waitgroup (up to %s)\n", timeout)
+	sugar.Infof("Wait for waitgroup (up to %s)", timeout)
 
 	if waitTimeout(&wg, timeout) {
-		sugar.Infof("\nTimeout elapsed after %s\n", timeout)
+		sugar.Infof("Timeout elapsed after %s", timeout)
 	} else {
 		sugar.Infof("Done")
 	}
